@@ -1,12 +1,12 @@
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Box;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 
 public class MainPanelGUI {
@@ -18,7 +18,7 @@ public class MainPanelGUI {
                 new MainPanelGUI().createAndShowGUI();
             }
         });
-        
+
         /*
         ParrallelDownloader p = new ParrallelDownloader();
         String url = "http://87.media.v4.skyrock.net/music/87c/c67/87cc6741833cac7eaeda396895b355fc.mp3";
@@ -33,22 +33,16 @@ public class MainPanelGUI {
 */
     }
 
-    /**
-     * Create the ConversionPanels (one for metric, another for U.S.).
-     * I used "U.S." because although Imperial and U.S. distance
-     * measurements are the same, this program could be extended to
-     * include volume measurements, which aren't the same.
-     */
     public MainPanelGUI() {
-        configPanel = new ConfigurationPanel();
         progressPanel = new ProgressPanel();
+        configPanel = new ConfigurationPanel(progressPanel);
 
         //Create a JPanel, and add the ConversionPanels to it.
         mainPane = new JPanel();
         mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
         mainPane.setOpaque(true);
         mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        
+
         mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPane.add(configPanel);
         mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -96,11 +90,6 @@ public class MainPanelGUI {
         }
     }
 
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
     private void createAndShowGUI() {
         //Set the look and feel.
         initLookAndFeel();
@@ -108,7 +97,7 @@ public class MainPanelGUI {
         //Create and set up the window.
         JFrame frame = new JFrame("ParallelFileDownloader");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(800, 200));
+        frame.setPreferredSize(new Dimension(800, 700));
 
         //Create and set up the content pane.
         MainPanelGUI converter = new MainPanelGUI();
@@ -119,7 +108,7 @@ public class MainPanelGUI {
         frame.pack();
         frame.setVisible(true);
     }
-    
+
     // Swing components
     private ConfigurationPanel configPanel;
     private ProgressPanel progressPanel;
