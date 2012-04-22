@@ -11,42 +11,122 @@ import javax.swing.JTextField;
 
 
 public class ConfigurationPanel extends JPanel implements ActionListener {
-    ConfigurationPanel(ProgressPanel progressPanel) {
-        myProgressPanel = progressPanel;
 
+
+    //////////////////////
+    // PUBLIC INTERFACE //
+    //////////////////////
+
+
+    public ConfigurationPanel() {
         this.setLayout(new GridLayout(10, 2));
         addComponentsToPanel();
     }
+
+    //:MAINTENANCE
+    // this action listener is pretty weak but it is good enough for now
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() instanceof JButton) {
+            // let's make sure we have all of the input we need
+            if(myURLTextField.getText().equals("")) {
+                myStatusTextField.setText("\"Source URL\" is blank!");
+            }
+            else if(myDestinationTextField.getText().equals("")) {
+                myStatusTextField.setText("\"Destination\" is blank!");
+            }
+            else {
+                // disable changing the number of chunks while downloading
+                myChunkComboBox.setEnabled(false);
+                myStatusTextField.setText("Download in progress ...");
+
+                // start the download in a new thread to free the GUI
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            for(int i = 10; i <= 100; i += 10) {
+                                ProgressPanel.getInstance().updateProgress(0, i);
+                                Thread.sleep(100);
+                                ProgressPanel.getInstance().updateProgress(1, i);
+                                Thread.sleep(150);
+                                ProgressPanel.getInstance().updateProgress(2, i);
+                                Thread.sleep(200);
+                                ProgressPanel.getInstance().updateProgress(3, i);
+                                Thread.sleep(100);
+                                ProgressPanel.getInstance().updateProgress(4, i);
+                                Thread.sleep(300);
+                                ProgressPanel.getInstance().updateProgress(5, i);
+                                Thread.sleep(100);
+                                ProgressPanel.getInstance().updateProgress(6, i);
+                                Thread.sleep(250);
+                                ProgressPanel.getInstance().updateProgress(7, i);
+                            }
+                        }
+                        catch(Exception ex) {
+                            System.err.print("\n\nDownload - Caught Exception:  " + ex.getMessage() + "\n\n");
+                            ex.printStackTrace();
+                        }
+                        
+                        // Update the status box
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                myStatusTextField.setText("Download complete!");
+                            }
+                        });
+                        
+                        // re-enable the combo box
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                myChunkComboBox.setEnabled(true);
+                            }
+                        });
+                    }
+                }).start();
+            }
+        }
+        else if(e.getSource() instanceof JComboBox) {
+            ProgressPanel.getInstance().setSelectedCard(myChunkComboBox.getSelectedIndex());
+        }
+        else {
+            System.err.println("ConfigurationPanel:  I don't know what action just happened!");
+        }
+    }
+
+
+    /////////////////////////
+    // PROTECTED INTERFACE //
+    /////////////////////////
+
+
+    ///////////////////////
+    // PRIVATE INTERFACE //
+    ///////////////////////
+
 
     private void addComponentsToPanel() {
         //
         // URL FIELD
         //
-        JLabel urlLabel = new JLabel("Source URL");
+        final JLabel urlLabel = new JLabel("Source URL");
         this.add(urlLabel);
-
-        JTextField urlTextField = new JTextField();
-        this.add(urlTextField);
+        this.add(myURLTextField);
 
 
         //
         // DESTINATION FIELD
         //
-        JLabel destinationLabel = new JLabel("Destination");
+        final JLabel destinationLabel = new JLabel("Destination");
         this.add(destinationLabel);
-
-        JTextField destinationTextField = new JTextField();
-        this.add(destinationTextField);
+        this.add(myDestinationTextField);
 
 
         //
         // NUMBER OF CORES
         //
-        JLabel numCoresLabel = new JLabel("Number of CPU Cores");
+        final JLabel numCoresLabel = new JLabel("Number of CPU Cores");
         this.add(numCoresLabel);
 
         final int numCores = Runtime.getRuntime().availableProcessors();
-        JTextField numCoresTextField = new JTextField(((Integer)numCores).toString());
+        final JTextField numCoresTextField = new JTextField(((Integer)numCores).toString());
         numCoresTextField.setEditable(false);
         this.add(numCoresTextField);
 
@@ -54,19 +134,21 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         //
         // NUMBER OF CHUNKS
         //
-        JLabel numChunksLabel = new JLabel("Number of Chunks");
+        final JLabel numChunksLabel = new JLabel("Number of Chunks");
         this.add(numChunksLabel);
 
-        Integer[] numChunks = {1, 2, 4, 8};
-        JComboBox<Integer> numChunksList = new JComboBox<Integer>(numChunks);
-        numChunksList.setSelectedIndex(0);
-        numChunksList.addActionListener(this);
-        this.add(numChunksList);
+        myChunkComboBox.addItem(1);
+        myChunkComboBox.addItem(2);
+        myChunkComboBox.addItem(4);
+        myChunkComboBox.addItem(8);
+        myChunkComboBox.setSelectedIndex(0);
+        myChunkComboBox.addActionListener(this);
+        this.add(myChunkComboBox);
 
         //
         // DOWNLOAD BUTTON
         //
-        JButton downloadButton = new JButton("Download");
+        final JButton downloadButton = new JButton("Download");
         downloadButton.addActionListener(this);
         this.add(downloadButton);
 
@@ -74,9 +156,10 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         //
         // STATUS FIELD
         //
-        JTextField statusTextField = new JTextField("System Ready");
-        statusTextField.setEditable(false);
-        this.add(statusTextField);
+        myStatusTextField.setText("System Ready");
+        myStatusTextField.setEditable(false);
+        myStatusTextField.setHorizontalAlignment(JTextField.CENTER);
+        this.add(myStatusTextField);
 
 
         // this makes the widgets arrange correctly
@@ -84,22 +167,17 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         this.add(filler);
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() instanceof JButton) {
-            System.out.println("Download button clicked");
-        }
 
-        if(e.getSource() instanceof JComboBox) {
-            //:MAINTENANCE
-            // Apparently there isn't a good way to "fix" this warning
-            // so we can suppress it because we know it is safe
-            @SuppressWarnings("unchecked")
+    /////////////////////
+    // PRIVATE MEMBERS //
+    /////////////////////
 
-            JComboBox<Integer> box = (JComboBox<Integer>)e.getSource();
-            myProgressPanel.setSelectedCard(box.getSelectedIndex());
-        }
-    }
 
-    private ProgressPanel myProgressPanel;
+    // need these components for the action listener
+    private final JTextField myURLTextField = new JTextField();
+    private final JTextField myDestinationTextField = new JTextField();
+    private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
+    private final JTextField myStatusTextField = new JTextField();
+
     private static final long serialVersionUID = 1L;
 }

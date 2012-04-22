@@ -10,6 +10,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 
 public class MainPanelGUI {
+
+
+    //////////////////////
+    // PUBLIC INTERFACE //
+    //////////////////////
+
+
     public static void main(String [] args) {    
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -19,6 +26,7 @@ public class MainPanelGUI {
             }
         });
 
+        
         /*
         ParrallelDownloader p = new ParrallelDownloader();
         String url = "http://87.media.v4.skyrock.net/music/87c/c67/87cc6741833cac7eaeda396895b355fc.mp3";
@@ -34,9 +42,6 @@ public class MainPanelGUI {
     }
 
     public MainPanelGUI() {
-        progressPanel = new ProgressPanel();
-        configPanel = new ConfigurationPanel(progressPanel);
-
         //Create a JPanel, and add the ConversionPanels to it.
         mainPane = new JPanel();
         mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
@@ -44,11 +49,22 @@ public class MainPanelGUI {
         mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
-        mainPane.add(configPanel);
+        mainPane.add(new ConfigurationPanel());
         mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
-        mainPane.add(progressPanel);
+        mainPane.add(ProgressPanel.getInstance());
         mainPane.add(Box.createGlue());
     }
+
+
+    /////////////////////////
+    // PROTECTED INTERFACE //
+    /////////////////////////
+
+
+    ///////////////////////
+    // PRIVATE INTERFACE //
+    ///////////////////////
+
 
     private void initLookAndFeel() {
         String lookAndFeel = null;
@@ -97,7 +113,7 @@ public class MainPanelGUI {
         //Create and set up the window.
         JFrame frame = new JFrame("ParallelFileDownloader");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(800, 700));
+        frame.setPreferredSize(new Dimension(1250, 500));
 
         //Create and set up the content pane.
         MainPanelGUI converter = new MainPanelGUI();
@@ -109,12 +125,17 @@ public class MainPanelGUI {
         frame.setVisible(true);
     }
 
+
+    /////////////////////
+    // PRIVATE MEMBERS //
+    /////////////////////
+
+
     // Swing components
-    private ConfigurationPanel configPanel;
-    private ProgressPanel progressPanel;
     private JPanel mainPane;
 
     //Specify the look and feel to use.  Valid values:
     //null (use the default), "Metal", "System", "Motif", "GTK+"
     private final static String LOOKANDFEEL = "Metal";
 }
+

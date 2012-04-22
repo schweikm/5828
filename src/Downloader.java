@@ -1,6 +1,5 @@
 import java.io.IOException;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -49,8 +48,7 @@ public class Downloader{
 	    DefaultHttpClient client = new DefaultHttpClient();
 	    ClientConnectionManager mgr = client.getConnectionManager();
 	    HttpParams params = client.getParams();
-	    //in the future I'll try and refactor this not to use deprecated constructor
-	    client = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
+	    client = new DefaultHttpClient(new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
 	    return client;
 	}
 }
