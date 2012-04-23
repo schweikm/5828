@@ -30,13 +30,6 @@ public class ParallelDownloader {
     URLConnection urlConnection = sourceURL.openConnection();
     final int fileSize = urlConnection.getContentLength();
 
-
-//    System.out.println("Source URL :  " + urlString);
-//    System.out.println("Destination:  " + destinationFile);
-//    System.out.println("File Size  :  " + fileSize);
-//    System.out.println("Num chunks :  " + numChunks);
-
-
     final List<Callable<byte[]>> partitions = new ArrayList<Callable<byte[]>>();
 
     //create a partition for each thread in our thread pool
@@ -47,7 +40,7 @@ public class ParallelDownloader {
 
       partitions.add(new Callable <byte[]> () {
         public byte[]  call() throws Exception {
-          return Downloader.downloadChunk(start, end, urlString);
+          return Downloader.downloadChunk(start, end, urlString, j);
         }
       });
     }
@@ -58,7 +51,7 @@ public class ParallelDownloader {
     if (remainder != 0) {
       partitions.add(new Callable <byte[]> () {
         public byte[]  call() throws Exception {
-          return Downloader.downloadChunk(fileSize-remainder, fileSize-1, urlString);
+          return Downloader.downloadChunk(fileSize-remainder, fileSize-1, urlString, -1);
         }
       });
     }
@@ -90,18 +83,17 @@ public class ParallelDownloader {
 
     try
     {
-     FileOutputStream fos = new FileOutputStream(destinationFile);
-      fos.write(finalByteArray);     
+      FileOutputStream fos = new FileOutputStream(destinationFile);
+      fos.write(finalByteArray);
       fos.close();
     }
     catch(FileNotFoundException ex)
     {
-     System.out.println("FileNotFoundException : " + ex);
+      System.out.println("FileNotFoundException : " + ex);
     }
     catch(IOException ioe)
     {
-     System.out.println("IOException : " + ioe);
+      System.out.println("IOException : " + ioe);
     }
   }
-
 }

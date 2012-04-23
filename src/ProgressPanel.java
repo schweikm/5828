@@ -57,10 +57,10 @@ public class ProgressPanel extends JPanel {
         final int upperBound = (int)(Math.pow(2, myCardIndex));
 
         if((index < lowerBound) || (index >= upperBound)) {
-//            System.err.println("Invalid index specified!" +
-//                               "  index:  " + index +
-//                               "  lower bound:  " + lowerBound +
-//                               "  upper bound:  " + upperBound);
+            System.err.println("Invalid index specified!" +
+                               "  index:  " + index +
+                               "  lower bound:  " + lowerBound +
+                               "  upper bound:  " + upperBound);
             return;
         }
 
