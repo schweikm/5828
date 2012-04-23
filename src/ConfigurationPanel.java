@@ -58,7 +58,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                             final int numChunks = (int)myChunkComboBox.getSelectedItem();
 
                             // download the file
-                            final ParrallelDownloader p = new ParrallelDownloader();
+                            final ParallelDownloader p = new ParallelDownloader();
                             p.download(sourceURL, destination, numChunks);
 
                             // update the status field for success

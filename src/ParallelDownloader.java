@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 
-public class ParrallelDownloader {
+public class ParallelDownloader {
 
   public void download(final String urlString,
                        final String destinationFile,
