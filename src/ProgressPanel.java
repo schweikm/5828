@@ -8,6 +8,8 @@ import java.lang.Math;
 
 import java.util.ArrayList;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
@@ -19,6 +21,10 @@ public class ProgressPanel extends JPanel {
     // PUBLIC INTERFACE //
     //////////////////////
 
+
+    public static ProgressPanel getInstance() {
+        return instance;
+    }
 
     //:MAINTENANCE
     // I realize that the ConfigurationPanel and the ProgressPanel
@@ -46,23 +52,27 @@ public class ProgressPanel extends JPanel {
         }
     }
 
-    public synchronized void updateProgress(final int index, final int amount) {
+    public void updateProgress(final int index, final int amount) {
         final int lowerBound = 0;
         final int upperBound = (int)(Math.pow(2, myCardIndex));
 
         if((index < lowerBound) || (index >= upperBound)) {
-            System.err.println("Invalid index specified!" +
-                               "  index:  " + index +
-                               "  lower bound:  " + lowerBound +
-                               "  upper bound:  " + upperBound);
+//            System.err.println("Invalid index specified!" +
+//                               "  index:  " + index +
+//                               "  lower bound:  " + lowerBound +
+//                               "  upper bound:  " + upperBound);
             return;
         }
 
-        myBarList.get(myCardIndex).get(index).setValue(amount);
-    }
+        // get the progress bar to operate on
+        rwLock.readLock().lock();
+        JProgressBar bar = myBarList.get(myCardIndex).get(index);
+        rwLock.readLock().unlock();
 
-    public static synchronized ProgressPanel getInstance() {
-        return instance;
+        // update the progress
+        rwLock.writeLock().lock();
+        bar.setValue(amount);
+        rwLock.writeLock().unlock();
     }
 
 
@@ -143,4 +153,6 @@ public class ProgressPanel extends JPanel {
       new ArrayList<ArrayList<JProgressBar>>();
 
     private int myCardIndex;
+    
+    private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
 }

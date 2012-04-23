@@ -17,7 +17,7 @@ public class MainPanelGUI {
     //////////////////////
 
 
-    public static void main(String [] args) {    
+    public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -26,7 +26,7 @@ public class MainPanelGUI {
             }
         });
 
-        
+
         /*
         ParrallelDownloader p = new ParrallelDownloader();
         String url = "http://87.media.v4.skyrock.net/music/87c/c67/87cc6741833cac7eaeda396895b355fc.mp3";
@@ -42,14 +42,13 @@ public class MainPanelGUI {
     }
 
     public MainPanelGUI() {
-        //Create a JPanel, and add the ConversionPanels to it.
         mainPane = new JPanel();
         mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
         mainPane.setOpaque(true);
         mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
-        mainPane.add(new ConfigurationPanel());
+        mainPane.add(ConfigurationPanel.getInstance());
         mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPane.add(ProgressPanel.getInstance());
         mainPane.add(Box.createGlue());
@@ -138,4 +137,3 @@ public class MainPanelGUI {
     //null (use the default), "Metal", "System", "Motif", "GTK+"
     private final static String LOOKANDFEEL = "Metal";
 }
-

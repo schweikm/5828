@@ -3,6 +3,14 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.lang.InterruptedException;
+
+import java.util.ArrayList;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -18,9 +26,8 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     //////////////////////
 
 
-    public ConfigurationPanel() {
-        this.setLayout(new GridLayout(10, 2));
-        addComponentsToPanel();
+    public static ConfigurationPanel getInstance() {
+        return instance;
     }
 
     //:MAINTENANCE
@@ -35,50 +42,17 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                 myStatusTextField.setText("\"Destination\" is blank!");
             }
             else {
-                // disable changing the number of chunks while downloading
+                // disallow changes while downloading
                 myChunkComboBox.setEnabled(false);
+                myDownloadButton.setEnabled(false);
                 myStatusTextField.setText("Download in progress ...");
 
                 // start the download in a new thread to free the GUI
                 new Thread(new Runnable() {
                     public void run() {
-                        try {
-                            for(int i = 10; i <= 100; i += 10) {
-                                ProgressPanel.getInstance().updateProgress(0, i);
-                                Thread.sleep(100);
-                                ProgressPanel.getInstance().updateProgress(1, i);
-                                Thread.sleep(150);
-                                ProgressPanel.getInstance().updateProgress(2, i);
-                                Thread.sleep(200);
-                                ProgressPanel.getInstance().updateProgress(3, i);
-                                Thread.sleep(100);
-                                ProgressPanel.getInstance().updateProgress(4, i);
-                                Thread.sleep(300);
-                                ProgressPanel.getInstance().updateProgress(5, i);
-                                Thread.sleep(100);
-                                ProgressPanel.getInstance().updateProgress(6, i);
-                                Thread.sleep(250);
-                                ProgressPanel.getInstance().updateProgress(7, i);
-                            }
-                        }
-                        catch(Exception ex) {
-                            System.err.print("\n\nDownload - Caught Exception:  " + ex.getMessage() + "\n\n");
-                            ex.printStackTrace();
-                        }
-                        
-                        // Update the status box
-                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                myStatusTextField.setText("Download complete!");
-                            }
-                        });
-                        
-                        // re-enable the combo box
-                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                myChunkComboBox.setEnabled(true);
-                            }
-                        });
+                        // This is where the real download code will go
+                        test_asyncProgressBar();
+                        ConfigurationPanel.getInstance().enableButtons();
                     }
                 }).start();
             }
@@ -91,6 +65,16 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         }
     }
 
+    public void enableButtons() {
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                myChunkComboBox.setEnabled(true);
+                myStatusTextField.setText("Download complete!");
+                myDownloadButton.setEnabled(true);
+            }
+        });
+    }
+
 
     /////////////////////////
     // PROTECTED INTERFACE //
@@ -101,6 +85,11 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     // PRIVATE INTERFACE //
     ///////////////////////
 
+
+    private ConfigurationPanel() {
+        this.setLayout(new GridLayout(10, 2));
+        addComponentsToPanel();
+    }
 
     private void addComponentsToPanel() {
         //
@@ -148,9 +137,8 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         //
         // DOWNLOAD BUTTON
         //
-        final JButton downloadButton = new JButton("Download");
-        downloadButton.addActionListener(this);
-        this.add(downloadButton);
+        myDownloadButton.addActionListener(this);
+        this.add(myDownloadButton);
 
 
         //
@@ -166,6 +154,39 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         JLabel filler = new JLabel("");
         this.add(filler);
     }
+    
+    private void test_asyncProgressBar() {
+        try {
+            final ArrayList<Callable<Integer>> taskList = new ArrayList<Callable<Integer>>();
+
+            for(int i = 0; i < 8; i++) {
+                final int index = i;
+                taskList.add(new Callable<Integer>() {
+                    public Integer call() {
+                        try {
+                            for(int i = 10; i <= 100; i += 10) {
+                                ProgressPanel.getInstance().updateProgress(index, i);
+                                Thread.sleep((index + 1) * 100);
+                            }
+                        }
+                        catch(InterruptedException iex) {
+                            System.err.println("Thread:  " + Thread.currentThread().getName() +
+                                               "caught exception:  " + iex.getMessage());
+                        }
+                        return 0;
+                    }
+                });
+            }
+
+            final ExecutorService service = Executors.newFixedThreadPool(8);
+            service.invokeAll(taskList);
+            service.shutdown();
+        }
+        catch(Exception ex) {
+            System.err.print("\n\nDownload - Caught Exception:  " + ex.getMessage() + "\n\n");
+            ex.printStackTrace();
+        }
+    }
 
 
     /////////////////////
@@ -173,11 +194,15 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     /////////////////////
 
 
+    // Singleton instance
+    private static final ConfigurationPanel instance = new ConfigurationPanel();
+
     // need these components for the action listener
     private final JTextField myURLTextField = new JTextField();
     private final JTextField myDestinationTextField = new JTextField();
     private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
     private final JTextField myStatusTextField = new JTextField();
+    private final JButton myDownloadButton = new JButton("Download");
 
     private static final long serialVersionUID = 1L;
 }
