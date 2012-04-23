@@ -25,33 +25,18 @@ public class MainPanelGUI {
                 new MainPanelGUI().createAndShowGUI();
             }
         });
-
-
-        /*
-        ParrallelDownloader p = new ParrallelDownloader();
-        String url = "http://87.media.v4.skyrock.net/music/87c/c67/87cc6741833cac7eaeda396895b355fc.mp3";
-        String outputFile = "somebodyThatIUsedToKnow.mp3";
-        int fileSize = 4903752;
-
-        try {
-            p.download(url, outputFile, fileSize);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-*/
     }
 
     public MainPanelGUI() {
-        mainPane = new JPanel();
-        mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
-        mainPane.setOpaque(true);
-        mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+        mainPanel.setOpaque(true);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
-        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
-        mainPane.add(ConfigurationPanel.getInstance());
-        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
-        mainPane.add(ProgressPanel.getInstance());
-        mainPane.add(Box.createGlue());
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPanel.add(ConfigurationPanel.getInstance());
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPanel.add(ProgressPanel.getInstance());
+        mainPanel.add(Box.createGlue());
     }
 
 
@@ -110,14 +95,14 @@ public class MainPanelGUI {
         initLookAndFeel();
 
         //Create and set up the window.
-        JFrame frame = new JFrame("ParallelFileDownloader");
+        final JFrame frame = new JFrame("ParallelFileDownloader");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(1250, 500));
 
         //Create and set up the content pane.
-        MainPanelGUI converter = new MainPanelGUI();
-        converter.mainPane.setOpaque(true); //content panes must be opaque
-        frame.setContentPane(converter.mainPane);
+        MainPanelGUI gui = new MainPanelGUI();
+        gui.mainPanel.setOpaque(true); //content panes must be opaque
+        frame.setContentPane(gui.mainPanel);
 
         //Display the window.
         frame.pack();
@@ -131,7 +116,7 @@ public class MainPanelGUI {
 
 
     // Swing components
-    private JPanel mainPane;
+    private final JPanel mainPanel = new JPanel();
 
     //Specify the look and feel to use.  Valid values:
     //null (use the default), "Metal", "System", "Motif", "GTK+"

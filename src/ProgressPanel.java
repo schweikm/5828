@@ -30,7 +30,7 @@ public class ProgressPanel extends JPanel {
     // I realize that the ConfigurationPanel and the ProgressPanel
     // are too tightly coupled but it can be fixed later
     public void setSelectedCard(final int selectedIndex) {
-        CardLayout cl = (CardLayout)(myCardPanel.getLayout());
+        final CardLayout cl = (CardLayout)(myCardPanel.getLayout());
         myCardIndex = selectedIndex;
 
         if(0 == selectedIndex) {
@@ -66,7 +66,7 @@ public class ProgressPanel extends JPanel {
 
         // get the progress bar to operate on
         rwLock.readLock().lock();
-        JProgressBar bar = myBarList.get(myCardIndex).get(index);
+        final JProgressBar bar = myBarList.get(myCardIndex).get(index);
         rwLock.readLock().unlock();
 
         // update the progress
@@ -106,12 +106,12 @@ public class ProgressPanel extends JPanel {
                                    final String description) {
 
         // create the container layout
-        JPanel cardPanel = new JPanel();
+        final JPanel cardPanel = new JPanel();
         cardPanel.setLayout(new GridLayout(4, 4));
 
         // add the number of progress bars
         for(int i = 0; i < numBars; i++) {
-            JProgressBar bar = new JProgressBar(0, 100);
+            final JProgressBar bar = new JProgressBar(0, 100);
             bar.setPreferredSize(new Dimension(600, 40));
             bar.setForeground(Color.GREEN);
             barList.add(bar);
@@ -138,10 +138,10 @@ public class ProgressPanel extends JPanel {
     private final JPanel myCardPanel = new JPanel(new CardLayout());
 
     // card descriptions
-    private final static String CARD_CHUNK1 = "Download with 1 chunk";
-    private final static String CARD_CHUNK2 = "Download with 2 chunks";
-    private final static String CARD_CHUNK4 = "Download with 4 chunks";
-    private final static String CARD_CHUNK8 = "Download with 8 chunks";
+    private static final String CARD_CHUNK1 = "Download with 1 chunk";
+    private static final String CARD_CHUNK2 = "Download with 2 chunks";
+    private static final String CARD_CHUNK4 = "Download with 4 chunks";
+    private static final String CARD_CHUNK8 = "Download with 8 chunks";
 
     // card components
     private final ArrayList<JProgressBar> myCard1Bars = new ArrayList<JProgressBar>();
