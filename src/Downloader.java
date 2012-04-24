@@ -1,10 +1,10 @@
+import java.io.InputStream;
 import java.io.IOException;
-
-import org.apache.commons.io.IOUtils;
 
 import org.apache.http.HttpResponse;
 
 import org.apache.http.client.ClientProtocolException;
+
 import org.apache.http.client.methods.HttpGet;
 
 import org.apache.http.conn.ClientConnectionManager;
@@ -31,17 +31,31 @@ public class Downloader{
     //try to execute the httpGet request
     try {
       final HttpResponse httpResponse = httpClient.execute(httpGet);
+      final int totalSize = (end - start) + 1;
 
-      //save the content into a byte array	
-      byte [] tempArray = IOUtils.toByteArray(httpResponse.getEntity().getContent());
-      byte [] returnArray = new byte[tempArray.length];
-      System.arraycopy(tempArray, 0, returnArray, 0, tempArray.length);
+      // the maximum transmission unit (MTU) of Ethernet v2
+      final int bufSize = 1500;
 
-      //clean up and shut stuff down...
+      final byte[] buffer = new byte[bufSize];
+      final byte[] returnArray = new byte[totalSize];
+      final InputStream urlStream = httpResponse.getEntity().getContent();
+
+      int bytesRead = 0;
+      int position = 0;
+      while((bytesRead = urlStream.read(buffer)) != -1) {
+        System.arraycopy(buffer, 0, returnArray, position, bytesRead);
+        position += bytesRead;
+
+        final double progress = (double)position / (double)totalSize;
+        final int percent = (int)(progress * 100);
+
+        ProgressPanel.getInstance().updateProgress(chunkIndex, percent);
+      }
+
+      //clean up and shut down
       httpClient.getConnectionManager().shutdown();
 
-      //:MAINTENANCE
-      // I'm not sure how we are going to accurately track progress here ...
+      // make sure the bar is filled - account for rounding error
       ProgressPanel.getInstance().updateProgress(chunkIndex, 100);
 
       return returnArray;

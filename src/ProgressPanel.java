@@ -132,7 +132,7 @@ public class ProgressPanel extends JPanel {
     private static final ProgressPanel instance = new ProgressPanel();
 
     // turn off Java warning
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 0L;
 
     // card container
     private final JPanel myCardPanel = new JPanel(new CardLayout());

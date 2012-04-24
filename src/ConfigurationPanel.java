@@ -3,14 +3,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.lang.InterruptedException;
-
-import java.util.ArrayList;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -33,6 +25,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     //:MAINTENANCE
     // this action listener is pretty weak but it is good enough for now
     public void actionPerformed(ActionEvent e) {
+        // Download button
         if(e.getSource() instanceof JButton) {
             // let's make sure we have all of the input we need
             if(myURLTextField.getText().equals("")) {
@@ -50,24 +43,27 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                 // start the download in a new thread to free the GUI
                 new Thread(new Runnable() {
                     public void run() {
-//                        test_asyncProgressBar();
-
                         try {
                             final String sourceURL = myURLTextField.getText();
                             final String destination = myDestinationTextField.getText();
                             final int numChunks = (int)myChunkComboBox.getSelectedItem();
 
-                            // download the file
+                            // download the file and time it
+                            final long start = System.nanoTime();
+
                             final ParallelDownloader p = new ParallelDownloader();
                             p.download(sourceURL, destination, numChunks);
+
+                            final long end = System.nanoTime();
+                            final double totalTime = (end - start) / 1.0e9;
 
                             // update the status field for success
                             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
-                                    myStatusTextField.setText("Download complete!");
+                                    myStatusTextField.setText("Download complete!  Time (seconds): "
+                                                                + totalTime);
                                 }
                             });
-                            
                         } catch (final Exception ex) {
                             // something went wrong - show we failed
                             javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -77,7 +73,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                             });
                         }
                         finally {
-                            // we need to re-enable the buttons
+                            // we need to re-enable the buttons no matter what
                             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     myChunkComboBox.setEnabled(true);
@@ -89,6 +85,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                 }).start();
             }
         }
+        // number of chunks combo box
         else if(e.getSource() instanceof JComboBox) {
             ProgressPanel.getInstance().setSelectedCard(myChunkComboBox.getSelectedIndex());
         }
@@ -156,6 +153,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         myChunkComboBox.addActionListener(this);
         this.add(myChunkComboBox);
 
+
         //
         // DOWNLOAD BUTTON
         //
@@ -178,43 +176,6 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     }
 
 
-    //:MAINTENANCE
-    // test code
-    private void test_asyncProgressBar() {
-        try {
-            final ArrayList<Callable<Integer>> taskList =
-              new ArrayList<Callable<Integer>>();
-
-            for(int i = 0; i < 8; i++) {
-                final int index = i;
-                taskList.add(new Callable<Integer>() {
-                    public Integer call() {
-                        try {
-                            for(int i = 10; i <= 100; i += 10) {
-                                ProgressPanel.getInstance().updateProgress(index, i);
-                                Thread.sleep((index + 1) * 100);
-                            }
-                        }
-                        catch(InterruptedException iex) {
-                            System.err.println("Thread:  " + Thread.currentThread().getName() +
-                                               "caught exception:  " + iex.getMessage());
-                        }
-                        return 0;
-                    }
-                });
-            }
-
-            final ExecutorService service = Executors.newFixedThreadPool(8);
-            service.invokeAll(taskList);
-            service.shutdown();
-        }
-        catch(Exception ex) {
-            System.err.print("\n\nDownload - Caught Exception:  " + ex.getMessage() + "\n\n");
-            ex.printStackTrace();
-        }
-    }
-
-
     /////////////////////
     // PRIVATE MEMBERS //
     /////////////////////
@@ -230,5 +191,6 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     private final JTextField myStatusTextField = new JTextField();
     private final JButton myDownloadButton = new JButton("Download");
 
+    // not sure what this is, but it causes a warning
     private static final long serialVersionUID = 1L;
 }

@@ -60,17 +60,15 @@ public class ParallelDownloader {
     final ExecutorService executorPool = Executors.newFixedThreadPool(numChunks);
     final List<Future<byte[]>> results = executorPool.invokeAll(partitions, 1000, TimeUnit.SECONDS);
 
-    byte [] finalByteArray = new byte[0];
-    byte [] finalTempByteArray;
-    byte [] newByteArray;
+    byte [] finalByteArray = null;
 
     //when the threads finish combine their results
     //using fixed thread pool we are guaranteed to iterate 
     //through finals in order so we can just add them sequentially
     for(final Future<byte[]> result : results) {
-      newByteArray = new byte[result.get().length];
+      final byte[] newByteArray = new byte[result.get().length];
       System.arraycopy(result.get(), 0, newByteArray, 0, result.get().length);
-      finalTempByteArray = new byte[finalByteArray.length];
+      final byte[] finalTempByteArray = new byte[finalByteArray.length];
 
       System.arraycopy(finalByteArray, 0, finalTempByteArray, 0, finalByteArray.length);
 
@@ -83,15 +81,15 @@ public class ParallelDownloader {
 
     try
     {
-      FileOutputStream fos = new FileOutputStream(destinationFile);
+      final FileOutputStream fos = new FileOutputStream(destinationFile);
       fos.write(finalByteArray);
       fos.close();
     }
-    catch(FileNotFoundException ex)
+    catch(final FileNotFoundException ex)
     {
       System.out.println("FileNotFoundException : " + ex);
     }
-    catch(IOException ioe)
+    catch(final IOException ioe)
     {
       System.out.println("IOException : " + ioe);
     }
