@@ -69,6 +69,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     myStatusTextField.setText("Download Failed!  " + ex.getMessage());
+                                    ex.printStackTrace();
                                 }
                             });
                         }

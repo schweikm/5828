@@ -29,6 +29,7 @@ public class ParallelDownloader {
     final URL sourceURL = new URL(urlString);
     URLConnection urlConnection = sourceURL.openConnection();
     final int fileSize = urlConnection.getContentLength();
+    System.out.println(fileSize);
 
     final List<Callable<byte[]>> partitions = new ArrayList<Callable<byte[]>>();
 
@@ -36,22 +37,12 @@ public class ParallelDownloader {
     for(int i = 0; i < numChunks; i++) {
       final int j = i;
       final int start = (int)(Math.floor((double)fileSize/numChunks))*(j);
-      final int end = (int)((Math.floor((double)fileSize/numChunks))*(j+1)-1);
-
+      //if this is last chunk set end equal to file size, else just calculate end
+      final int end = (i==numChunks-1)  ? fileSize : (int)((Math.floor((double)fileSize/numChunks))*(j+1)-1);
+      
       partitions.add(new Callable <byte[]> () {
         public byte[]  call() throws Exception {
           return Downloader.downloadChunk(start, end, urlString, j);
-        }
-      });
-    }
-
-    final int remainder = fileSize % numChunks;
-
-    //Add one last partition if a remainder exists
-    if (remainder != 0) {
-      partitions.add(new Callable <byte[]> () {
-        public byte[]  call() throws Exception {
-          return Downloader.downloadChunk(fileSize-remainder, fileSize-1, urlString, -1);
         }
       });
     }
@@ -60,7 +51,7 @@ public class ParallelDownloader {
     final ExecutorService executorPool = Executors.newFixedThreadPool(numChunks);
     final List<Future<byte[]>> results = executorPool.invokeAll(partitions, 1000, TimeUnit.SECONDS);
 
-    byte [] finalByteArray = null;
+    byte [] finalByteArray = new byte [0];
 
     //when the threads finish combine their results
     //using fixed thread pool we are guaranteed to iterate 
