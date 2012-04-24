@@ -58,20 +58,10 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                             final double totalTime = (end - start) / 1.0e9;
 
                             // update the status field for success
-                            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    myStatusTextField.setText("Download complete!  Time (seconds): "
-                                                                + totalTime);
-                                }
-                            });
+                            updateStatusMessageLater("Download complete!  Time (seconds): " + totalTime);
                         } catch (final Exception ex) {
                             // something went wrong - show we failed
-                            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    myStatusTextField.setText("Download Failed!  " + ex.getMessage());
-                                    ex.printStackTrace();
-                                }
-                            });
+                            updateStatusMessageLater("Download Failed!  " + ex.getMessage());
                         }
                         finally {
                             // we need to re-enable the buttons no matter what
@@ -105,6 +95,14 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     // PRIVATE INTERFACE //
     ///////////////////////
 
+
+    private void updateStatusMessageLater(final String message) {
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                myStatusTextField.setText(message);
+            }
+        });
+    }
 
     private ConfigurationPanel() {
         this.setLayout(new GridLayout(10, 2));

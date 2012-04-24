@@ -29,7 +29,11 @@ public class ParallelDownloader {
     final URL sourceURL = new URL(urlString);
     URLConnection urlConnection = sourceURL.openConnection();
     final int fileSize = urlConnection.getContentLength();
-    System.out.println(fileSize);
+
+    // if the remote site returns a bad size then bail out
+    if(fileSize <= 0) {
+      throw new IOException("Invalid file size returned from remote host:  " + fileSize);
+    }
 
     final List<Callable<byte[]>> partitions = new ArrayList<Callable<byte[]>>();
 
