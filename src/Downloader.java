@@ -70,7 +70,7 @@ public class Downloader{
 
   //have to use this to get a thread safe client instead of just 
   //making a call to DefaultHttpClient constructor
-  public static DefaultHttpClient getThreadSafeClient() {
+  private static DefaultHttpClient getThreadSafeClient() {
     final DefaultHttpClient dummyClient = new DefaultHttpClient();
     final ClientConnectionManager mgr = dummyClient.getConnectionManager();
     final HttpParams params = dummyClient.getParams();
