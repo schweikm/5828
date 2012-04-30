@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -31,7 +32,8 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
             if(myURLTextField.getText().equals("")) {
                 myStatusTextField.setText("\"Source URL\" is blank!");
             }
-            else if(myDestinationTextField.getText().equals("")) {
+            else if(myDestinationFileChooser.getText().equals("")) {
+            //else if(myDestinationTextField.getText().equals("")) {
                 myStatusTextField.setText("\"Destination\" is blank!");
             }
             else {
@@ -45,7 +47,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                     public void run() {
                         try {
                             final String sourceURL = myURLTextField.getText();
-                            final String destination = myDestinationTextField.getText();
+                            final String destination = myDestinationFileChooser.getText();
                             final int numChunks = (int)myChunkComboBox.getSelectedItem();
 
                             // download the file and time it
@@ -117,14 +119,12 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         this.add(urlLabel);
         this.add(myURLTextField);
 
-
         //
-        // DESTINATION FIELD
+        // FILE CHOOSER
         //
-        final JLabel destinationLabel = new JLabel("Destination");
-        this.add(destinationLabel);
-        this.add(myDestinationTextField);
-
+        final JLabel fileChooserLabel = new JLabel("Destination");
+        this.add(fileChooserLabel);
+        this.add(myDestinationFileChooser);
 
         //
         // NUMBER OF CORES
@@ -185,7 +185,8 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
 
     // need these components for the action listener
     private final JTextField myURLTextField = new JTextField();
-    private final JTextField myDestinationTextField = new JTextField();
+   // private final JTextField myDestinationTextField = new JTextField();
+    private final FileChooser myDestinationFileChooser = new FileChooser();
     private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
     private final JTextField myStatusTextField = new JTextField();
     private final JButton myDownloadButton = new JButton("Download");

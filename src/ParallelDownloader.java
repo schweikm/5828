@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,11 +17,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 
 public class ParallelDownloader {
 
   public void download(final String urlString,
-                       final String destinationFile,
+                       String destinationFile,
                        final int numChunks)
     throws InterruptedException, ExecutionException,
            MalformedURLException, IOException {
@@ -76,7 +79,14 @@ public class ParallelDownloader {
 
     try
     {
+      //if they just selected a folder call the new file output and put it in that folder
+      File file = new File(destinationFile);
+      if(file.isDirectory()) {
+      	  destinationFile = destinationFile + "/output";
+      }
+      
       final FileOutputStream fos = new FileOutputStream(destinationFile);
+
       fos.write(finalByteArray);
       fos.close();
     }
@@ -89,4 +99,5 @@ public class ParallelDownloader {
       System.out.println("IOException : " + ioe);
     }
   }
+ 
 }
