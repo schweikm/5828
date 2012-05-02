@@ -186,7 +186,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     // need these components for the action listener
     private final JTextField myURLTextField = new JTextField();
    // private final JTextField myDestinationTextField = new JTextField();
-    private final FileChooser myDestinationFileChooser = new FileChooser();
+    private final FileChooserField myDestinationFileChooser = new FileChooserField();
     private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
     private final JTextField myStatusTextField = new JTextField();
     private final JButton myDownloadButton = new JButton("Download");

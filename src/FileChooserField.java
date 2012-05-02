@@ -3,13 +3,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
  
-public class FileChooser extends JPanel {
+public class FileChooserField extends JPanel {
  
     //////////////////////
     // PUBLIC INTERFACE //
     //////////////////////
     
-    public FileChooser() {
+    public FileChooserField() {
  
     	super(new BorderLayout());
  
@@ -17,7 +17,7 @@ public class FileChooser extends JPanel {
         destinationTextField.addMouseListener(new MouseAdapter() {
           // on mouse click pull up the file chooser
           public void mouseClicked(MouseEvent e) {
-              int returnVal = fileChooser.showOpenDialog(FileChooser.this);
+              int returnVal = fileChooser.showOpenDialog(FileChooserField.this);
         		  
               if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
