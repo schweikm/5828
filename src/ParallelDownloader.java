@@ -80,7 +80,7 @@ public class ParallelDownloader {
       //if they just selected a folder call the new file output and put it in that folder
       File file = new File(destinationFile);
       if(file.isDirectory()) {
-      	  destinationFile = destinationFile + "/output";
+      	  destinationFile = destinationFile + "/" + urlString.substring(urlString.lastIndexOf('/'));
       }
       
       final FileOutputStream fos = new FileOutputStream(destinationFile);
