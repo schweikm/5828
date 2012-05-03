@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -23,11 +22,10 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         return instance;
     }
 
-    //:MAINTENANCE
-    // this action listener is pretty weak but it is good enough for now
+
     public void actionPerformed(ActionEvent e) {
         // Download button
-        if(e.getSource() instanceof JButton) {
+        if(e.getActionCommand().equals(ACTION_DOWNLOAD)) {
             // let's make sure we have all of the input we need
             if(myURLTextField.getText().equals("")) {
                 myStatusTextField.setText("\"Source URL\" is blank!");
@@ -79,7 +77,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
             }
         }
         // number of chunks combo box
-        else if(e.getSource() instanceof JComboBox) {
+        else if(e.getActionCommand().equals(ACTION_NUMCHUNKS)) {
             ProgressPanel.getInstance().setSelectedCard(myChunkComboBox.getSelectedIndex());
         }
         else {
@@ -149,6 +147,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         myChunkComboBox.addItem(4);
         myChunkComboBox.addItem(8);
         myChunkComboBox.setSelectedIndex(0);
+        myChunkComboBox.setActionCommand(ACTION_NUMCHUNKS);
         myChunkComboBox.addActionListener(this);
         this.add(myChunkComboBox);
 
@@ -156,6 +155,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         //
         // DOWNLOAD BUTTON
         //
+        myDownloadButton.setActionCommand(ACTION_DOWNLOAD);
         myDownloadButton.addActionListener(this);
         this.add(myDownloadButton);
 
@@ -190,6 +190,10 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
     private final JTextField myStatusTextField = new JTextField();
     private final JButton myDownloadButton = new JButton("Download");
+
+    // action commands
+    private static final String ACTION_DOWNLOAD = "action_download";
+    private static final String ACTION_NUMCHUNKS = "action_numChunks";
 
     // not sure what this is, but it causes a warning
     private static final long serialVersionUID = 1L;
